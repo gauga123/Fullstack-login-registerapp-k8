@@ -58,44 +58,26 @@ pipeline {
         }
 
 stage('Deploy to Kubernetes') {
-    steps {
-        // Sử dụng 'kubeconfig-creds' bạn vừa tạo
-        withCredentials([file(credentialsId: 'kubeconfig-creds', variable: 'KUBECONFIG_FILE')]) {
-            
-            // KHÔNG CÓ GÌ Ở ĐÂY (Đã xóa dòng lỗi)
+            steps {
+                script {
+                    sh """
+                        kubectl apply -f k8s/db/
+                        kubectl apply -f k8s/backend/
+                        kubectl apply -f k8s/frontend/
+                        kubectl apply -f k8s/ingress.yaml
 
-            sh """
-                # THÊM DÒNG NÀY:
-                export KUBECONFIG="$KUBECONFIG_FILE"
-                
-                # ------
-                # Các lệnh cũ giữ nguyên
-                # ------
-                
-                echo "Deploying applications to Kubernetes..."
-                
-                kubectl apply -f k8s/db/
-                kubectl apply -f k8s/backend/
-                kubectl apply -f k8s/frontend/
-                kubectl apply -f k8s/ingress.yaml
-
-                echo "Restarting deployments to pull new images..."
-                
-                kubectl rollout restart deployment frontend-deployment
-                kubectl rollout restart deployment backend-deployment
-                kubectl rollout restart statefulset/postgres 
-
-                echo "Waiting for rollout to complete..."
-                
-                kubectl rollout status deployment/frontend-deployment
-                kubectl rollout status deployment/backend-deployment
-                kubectl rollout status statefulset/postgres
-                
-                echo "Deployment complete!"
-            """
+			# 🔄 Restart deployments so pods pull the latest image
+                        kubectl rollout restart deployment frontend-deployment
+                        kubectl rollout restart deployment backend-deployment
+                        kubectl rollout restart statefulset/postgres 
+              		# ⏳ Wait until updates are done
+                        kubectl rollout status deployment/frontend-deployment
+                        kubectl rollout status deployment/backend-deployment
+                        kubectl rollout status statefulset/postgres
+                    """
+                }
+            }
         }
-    }
-}
     }
 
     post {
