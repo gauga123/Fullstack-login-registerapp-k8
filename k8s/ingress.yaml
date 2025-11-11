@@ -12,17 +12,16 @@ spec:
     - host: app.139.59.253.95.nip.io
       http:
         paths:
-          
           # QUY TẮC 1: GỬI YÊU CẦU API ĐẾN BACKEND
-          # Khi Ingress thấy '/api/...'
-          # Nó sẽ gửi truy cập đến 'backend-service' ở cổng 5000
+          # Sẽ khớp với '/api/users/signup'
+          # và gửi '/users/signup' đến backend-service ở cổng 5000
           - path: /api(/|$)(.*)
             pathType: Prefix
             backend:
               service:
-                name: backend-service
+                name: backend-service # Tên từ file service.yaml
                 port:
-                  number: 5000
+                  number: 5000 # Cổng từ file service.yaml
 
           # QUY TẮC 2: GỬI MỌI THỨ CÒN LẠI ĐẾN FRONTEND
           - path: /
