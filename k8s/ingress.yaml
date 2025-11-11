@@ -1,26 +1,30 @@
+# k8s/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: login-app-ingress
+  name: app-ingress
   annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
   rules:
-    - host: loginapp.local
+    # SỬA DÒNG NÀY:
+    - host: app.139.59.253.95.nip.io 
       http:
         paths:
-          - path: /api(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: backend-service
-                port:
-                  number: 5000
-          - path: /(.*)
+          # Gửi các yêu cầu tải trang đến Frontend
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: frontend-service
                 port:
                   number: 80
+          # Gửi các yêu cầu API đến Backend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  # Đảm bảo đây là cổng của backend-service (ví dụ: 5000)
+                  number: 5000
