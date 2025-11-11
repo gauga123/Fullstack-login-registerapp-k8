@@ -15,9 +15,9 @@ spec:
       containers:
         - name: frontend
           image: levanduc2/frontend:latest
-          imagePullPolicy: Always   # ✅ Force Kubernetes to always pull latest
+          imagePullPolicy: Always # ✅ Force Kubernetes to always pull latest
           ports:
-            - containerPort: 80   # Nginx exposes port 80
+            - containerPort: 80 # Nginx exposes port 80
           env:
             - name: REACT_APP_BACKEND_URL
               value: "http://backend-service:5000"

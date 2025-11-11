@@ -3,8 +3,14 @@ kind: Service
 metadata:
   name: frontend-service
 spec:
+  # BẠN CẦN THÊM DÒNG NÀY:
+  type: NodePort 
+  
   selector:
     app: frontend
   ports:
     - port: 80
       targetPort: 80
+      # (Bạn cũng có thể chỉ định một 'nodePort' cố định ở đây nếu muốn,
+      #  ví dụ: nodePort: 30001)
+      # (Nếu không chỉ định, K8s sẽ tự chọn một cổng ngẫu nhiên > 30000)
