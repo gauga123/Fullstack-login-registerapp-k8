@@ -4,28 +4,31 @@ kind: Ingress
 metadata:
   name: app-ingress
   annotations:
-    # Cấu hình này rất quan trọng để rewrite (viết lại) đường dẫn
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # XÓA BỎ TẤT CẢ annotation 'rewrite-target'
+    # Chúng ta không cần nó nếu backend của bạn đã xử lý /api
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-    # Sử dụng IP public của máy chủ của bạn
+    # Sử dụng IP public và nip.io
     - host: app.139.59.253.95.nip.io
       http:
         paths:
-          # QUY TẮC 1: GỬI YÊU CẦU API ĐẾN BACKEND
-          # Sẽ khớp với '/api/users/signup'
-          # và gửi '/users/signup' đến backend-service ở cổng 5000
-          - path: /api(/|$)(.*)
-            pathType: Prefix
+          
+          # QUY TẮC 1: BACKEND (Phải đặt TRƯỚC)
+          # Gửi /api/users/signup -> backend-service:5000/api/users/signup
+          - path: /api
+            pathType: Prefix # Sẽ khớp với /api VÀ /api/bất-cứ-thứ-gì
             backend:
               service:
-                name: backend-service # Tên từ file service.yaml
+                name: backend-service
                 port:
-                  number: 5000 # Cổng từ file service.yaml
+                  number: 5000 # Cổng từ service.yaml
 
-          # QUY TẮC 2: GỬI MỌI THỨ CÒN LẠI ĐẾN FRONTEND
+          # QUY TẮC 2: FRONTEND (Phải đặt SAU)
+          # Gửi / -> frontend-service:80/
+          # Gửi /static/js/main...js -> frontend-service:80/static/js/main...js
           - path: /
-            pathType: Prefix
+            pathType: Prefix # Sẽ khớp với mọi thứ còn lại
             backend:
               service:
                 name: frontend-service
