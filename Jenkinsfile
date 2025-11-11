@@ -8,8 +8,8 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('DockerHub-Creds')
         GITHUB_CREDENTIALS = credentials('Github-creds')
-        FRONTEND_IMAGE = 'pantalagopichand/frontend'
-        BACKEND_IMAGE = 'pantalagopichand/backend'
+        FRONTEND_IMAGE = 'levanduc2/frontend'
+        BACKEND_IMAGE = 'levanduc2/backend'
     }
 
     stages {
@@ -18,7 +18,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'Github-creds',
-                    url: 'https://github.com/gopichandpantala/Fullstack-login-registerapp-k8s.git'
+                    url: 'https://github.com/gauga123/Fullstack-login-registerapp-k8'
             }
         }
 

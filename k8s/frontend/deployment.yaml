@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: pantalagopichand/frontend:latest
+          image: levanduc2/frontend:latest
           imagePullPolicy: Always   # ✅ Force Kubernetes to always pull latest
           ports:
             - containerPort: 80   # Nginx exposes port 80
