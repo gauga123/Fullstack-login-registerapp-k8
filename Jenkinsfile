@@ -57,18 +57,23 @@ pipeline {
             }
         }
 
-       stage('Deploy to Kubernetes') {
+stage('Deploy to Kubernetes') {
     steps {
-        // Sử dụng 'kubeconfig-creds' bạn vừa tạo ở Bước 3
+        // Sử dụng 'kubeconfig-creds' bạn vừa tạo
         withCredentials([file(credentialsId: 'kubeconfig-creds', variable: 'KUBECONFIG_FILE')]) {
             
-            // Đặt biến môi trường KUBECONFIG để kubectl sử dụng tệp bí mật
-            env.KUBECONFIG = "$KUBECONFIG_FILE"
-            
+            // KHÔNG CÓ GÌ Ở ĐÂY (Đã xóa dòng lỗi)
+
             sh """
+                # THÊM DÒNG NÀY:
+                export KUBECONFIG="$KUBECONFIG_FILE"
+                
+                # ------
+                # Các lệnh cũ giữ nguyên
+                # ------
+                
                 echo "Deploying applications to Kubernetes..."
                 
-                # Bỏ 'microk8s' - Chỉ dùng 'kubectl'
                 kubectl apply -f k8s/db/
                 kubectl apply -f k8s/backend/
                 kubectl apply -f k8s/frontend/
@@ -76,14 +81,12 @@ pipeline {
 
                 echo "Restarting deployments to pull new images..."
                 
-                # Bỏ 'microk8s'
                 kubectl rollout restart deployment frontend-deployment
                 kubectl rollout restart deployment backend-deployment
                 kubectl rollout restart statefulset/postgres 
 
                 echo "Waiting for rollout to complete..."
                 
-                # Bỏ 'microk8s'
                 kubectl rollout status deployment/frontend-deployment
                 kubectl rollout status deployment/backend-deployment
                 kubectl rollout status statefulset/postgres
